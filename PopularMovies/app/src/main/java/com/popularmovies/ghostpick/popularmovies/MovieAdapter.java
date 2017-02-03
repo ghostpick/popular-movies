@@ -6,13 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.popularmovies.ghostpick.popularmovies.data.Movie;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdapterViewHolder> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private ArrayList<Movie> mMovieData;
 
@@ -42,12 +44,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
     /**
      * Cache of the children views for a forecast list item.
      */
-    public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
-        public final TextView mWeatherTextView;
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+        public final ImageView mWeatherTextView;
 
-        public ForecastAdapterViewHolder(View view) {
+        public MovieAdapterViewHolder(View view) {
             super(view);
-            mWeatherTextView = (TextView) view.findViewById(R.id.tv_movie_data);
+            mWeatherTextView = (ImageView) view.findViewById(R.id.tv_movie_data);
             view.setOnClickListener(this);
         }
 
@@ -60,8 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
 
-            Movie movie = new Movie();
-            movie = mMovieData.get(adapterPosition);
+            Movie movie = mMovieData.get(adapterPosition);
             String weatherForDay = movie.getOverview();
 
             mClickHandler.onClick(weatherForDay);
@@ -77,17 +78,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
      *                  can use this viewType integer to provide a different layout. See
      *                  {@link android.support.v7.widget.RecyclerView.Adapter#getItemViewType(int)}
      *                  for more details.
-     * @return A new ForecastAdapterViewHolder that holds the View for each list item
+     * @return A new MovieAdapterViewHolder that holds the View for each list item
      */
     @Override
-    public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.list_movies;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        return new ForecastAdapterViewHolder(view);
+        return new MovieAdapterViewHolder(view);
     }
 
     /**
@@ -96,17 +97,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
      * details for this particular position, using the "position" argument that is conveniently
      * passed into us.
      *
-     * @param forecastAdapterViewHolder The ViewHolder which should be updated to represent the
+     * @param movieAdapterViewHolder The ViewHolder which should be updated to represent the
      *                                  contents of the item at the given position in the data set.
      * @param position                  The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
-        Movie movie = new Movie();
-        movie = mMovieData.get(position);
+    public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
+        Movie movie = mMovieData.get(position);
 
-        String weatherForThisDay = movie.getTitle();
-        forecastAdapterViewHolder.mWeatherTextView.setText(weatherForThisDay);
+        String posterPath = movie.getPhoto();
+
+        Picasso.with(movieAdapterViewHolder.mWeatherTextView.getContext())
+                .load("http://image.tmdb.org/t/p/w342/" + posterPath)
+                .into(movieAdapterViewHolder.mWeatherTextView);
     }
 
     /**

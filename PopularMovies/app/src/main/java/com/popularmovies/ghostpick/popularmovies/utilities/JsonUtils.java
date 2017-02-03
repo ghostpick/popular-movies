@@ -1,9 +1,7 @@
 package com.popularmovies.ghostpick.popularmovies.utilities;
 
 import android.content.Context;
-
 import com.popularmovies.ghostpick.popularmovies.data.Movie;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

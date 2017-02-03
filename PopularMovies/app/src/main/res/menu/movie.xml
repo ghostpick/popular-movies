@@ -9,12 +9,26 @@
     <item
         android:id="@+id/action_refresh"
         android:orderInCategory="1"
-        android:title="@string/action_teste"
+        android:title="xxx"
         app:showAsAction="ifRoom"/>
-
     <item
         android:id="@+id/item_openMap"
         android:orderInCategory="1"
         android:title="Open map"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/item_sortByNowPlaying"
+        android:orderInCategory="2"
+        android:title="@string/item_sortByNowPlaying"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/item_sortByPopular"
+        android:orderInCategory="3"
+        android:title="@string/item_sortByPopular"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/item_sortByTopRated"
+        android:orderInCategory="4"
+        android:title="@string/item_sortByTopRated"
         app:showAsAction="never"/>
 </menu>
