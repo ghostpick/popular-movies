@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.popularmovies.ghostpick.popularmovies.data.PopularMoviesPreferences;
 import com.popularmovies.ghostpick.popularmovies.utilities.NetworkUtils;
-import com.popularmovies.ghostpick.popularmovies.utilities.OpenMovieJsonUtils;
+import com.popularmovies.ghostpick.popularmovies.utilities.JsonUtils;
 
 import java.net.URL;
 
@@ -68,18 +68,18 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         // Load movies data
-        loadWeatherData();
+        loadMoviesData();
     }
 
     /**
      * This method will get the user's preferred location for weather, and then tell some
      * background method to get the weather data in the background.
      */
-    private void loadWeatherData() {
-        showWeatherDataView();
+    private void loadMoviesData() {
+        showMoviesDataView();
 
-        String location = PopularMoviesPreferences.getPreferredWeatherLocation(this);
-        new FetchWeatherTask().execute(location);
+        String defaultFilver = PopularMoviesPreferences.getPreferredWeatherLocation(this);
+        new FetchWeatherTask().execute(defaultFilver);
     }
 
     /**
@@ -104,7 +104,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
      * Since it is okay to redundantly set the visibility of a View, we don't
      * need to check whether each view is currently visible or invisible.
      */
-    private void showWeatherDataView() {
+    private void showMoviesDataView() {
         /* First, make sure the error is invisible */
         mErrorMessage.setVisibility(View.INVISIBLE);
         /* Then, make sure the weather data is visible */
@@ -141,15 +141,20 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
                 return null;
             }
 
-            String location = params[0];
-            URL weatherRequestUrl = NetworkUtils.buildUrl(location);
+            String defaultFilver = params[0];
+            defaultFilver = "now_playing";
+            URL moviesRequestUrl = NetworkUtils.buildUrl(defaultFilver);
 
             try {
                 String jsonWeatherResponse = NetworkUtils
-                        .getResponseFromHttpUrl(weatherRequestUrl);
+                        .getResponseFromHttpUrl(moviesRequestUrl);
 
-                String[] simpleJsonWeatherData = OpenMovieJsonUtils
-                        .getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+                String[] simpleJsonWeatherData = JsonUtils
+                        .getMoviesFromJson(MainActivity.this, jsonWeatherResponse);
+
+
+                System.out.println(simpleJsonWeatherData);
+
 
                 return simpleJsonWeatherData;
 
@@ -163,7 +168,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         protected void onPostExecute(String[] weatherData) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (weatherData != null) {
-                showWeatherDataView();
+                showMoviesDataView();
                 mMovieAdapter.setWeatherData(weatherData);
             } else {
                 showErrorMessage();
@@ -204,7 +209,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
 
         if (id == R.id.action_refresh) {
             mMovieAdapter.setWeatherData(null);
-            loadWeatherData();
+            loadMoviesData();
             return true;
         }
 
