@@ -8,9 +8,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.popularmovies.ghostpick.popularmovies.data.Movie;
+
+import java.util.ArrayList;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdapterViewHolder> {
 
-    private String[] mMovieData;
+    private ArrayList<Movie> mMovieData;
 
     /*
      * An on-click handler that we've defined to make it easy for an Activity to interface with
@@ -55,7 +59,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            String weatherForDay = mMovieData[adapterPosition];
+
+            Movie movie = new Movie();
+            movie = mMovieData.get(adapterPosition);
+            String weatherForDay = movie.getOverview();
+
             mClickHandler.onClick(weatherForDay);
         }
     }
@@ -94,7 +102,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
      */
     @Override
     public void onBindViewHolder(ForecastAdapterViewHolder forecastAdapterViewHolder, int position) {
-        String weatherForThisDay = mMovieData[position];
+        Movie movie = new Movie();
+        movie = mMovieData.get(position);
+
+        String weatherForThisDay = movie.getTitle();
         forecastAdapterViewHolder.mWeatherTextView.setText(weatherForThisDay);
     }
 
@@ -107,7 +118,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
     @Override
     public int getItemCount() {
         if (null == mMovieData) return 0;
-        return mMovieData.length;
+        return mMovieData.size();
     }
 
     /**
@@ -117,7 +128,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ForecastAdap
      *
      * @param weatherData The new weather data to be displayed.
      */
-    public void setWeatherData(String[] weatherData) {
+    public void setWeatherData(ArrayList<Movie> weatherData) {
         mMovieData = weatherData;
         notifyDataSetChanged();
     }

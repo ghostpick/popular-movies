@@ -1,21 +1,28 @@
 package com.popularmovies.ghostpick.popularmovies.utilities;
 
 import android.content.Context;
+
+import com.popularmovies.ghostpick.popularmovies.data.Movie;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
 public class JsonUtils {
 
-    public static String[] getMoviesFromJson(Context context, String movies) throws JSONException {
+    public static ArrayList<Movie> getMoviesFromJson(Context context, String movies) throws JSONException {
 
         final String jsonResults        = "results";
         final String jsonTitle          = "title";
+        final String jsonOverview       = "overview";
+        final String jsonReleaseDate    = "release_date";
+        final String jsonVoteAverage    = "vote_average";
+        final String jsonImage          = "poster_path";
+
         final String jsonMessageCode    = "cod";
 
-
-        String[] parsedData = null;
         JSONObject moviesJson = new JSONObject(movies);
 
         /* Is there an error? */
@@ -33,20 +40,23 @@ public class JsonUtils {
         }
 
         JSONArray moviesArray = moviesJson.getJSONArray(jsonResults);
-        parsedData = new String[moviesArray.length()];
+        ArrayList<Movie> arr_movie = new ArrayList<Movie>();
 
         for (int i = 0; i < moviesArray.length(); i++) {
-
-            String description;
+            Movie movie = new Movie();
 
             /* Get the JSON object representing the day */
             JSONObject itemMovie = moviesArray.getJSONObject(i);
 
-            description = itemMovie.getString(jsonTitle);
+            movie.setTitle(itemMovie.getString(jsonTitle));
+            movie.setOverview(itemMovie.getString(jsonOverview));
+            movie.setReleaseDate(itemMovie.getString(jsonReleaseDate));
+            movie.setVoteAverage(itemMovie.getString(jsonVoteAverage));
+            movie.setPhoto(itemMovie.getString(jsonImage));
 
-            parsedData[i] = description;
+            arr_movie.add(movie);
         }
 
-        return parsedData;
+        return arr_movie;
     }
 }

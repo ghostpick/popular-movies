@@ -20,7 +20,7 @@ public final class NetworkUtils {
     private static final String QUERY_LANGUAGE      = "language";
     private static final String QUERY_PAGE          = "page";
 
-    private static final String PARAM_API_KEY       = "PARAM_API_KEY";
+    private static final String PARAM_API_KEY       = "XXXXXXXXX";
 
     static final String param_language              = "en-US";
     static final int param_page                     = 1;

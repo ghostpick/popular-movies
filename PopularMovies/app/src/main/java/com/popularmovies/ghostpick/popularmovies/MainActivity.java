@@ -16,11 +16,13 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.popularmovies.ghostpick.popularmovies.data.Movie;
 import com.popularmovies.ghostpick.popularmovies.data.PopularMoviesPreferences;
 import com.popularmovies.ghostpick.popularmovies.utilities.NetworkUtils;
 import com.popularmovies.ghostpick.popularmovies.utilities.JsonUtils;
 
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity  extends AppCompatActivity implements MovieAdapter.MoviesAdapterOnClickHandler {
 
@@ -125,7 +127,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         mErrorMessage.setVisibility(View.VISIBLE);
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+    public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
         @Override
         protected void onPreExecute() {
@@ -134,7 +136,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         }
 
         @Override
-        protected String[] doInBackground(String... params) {
+        protected ArrayList<Movie> doInBackground(String... params) {
 
             /* If there's no zip code, there's nothing to look up. */
             if (params.length == 0) {
@@ -149,7 +151,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
                 String jsonWeatherResponse = NetworkUtils
                         .getResponseFromHttpUrl(moviesRequestUrl);
 
-                String[] simpleJsonWeatherData = JsonUtils
+                ArrayList<Movie> simpleJsonWeatherData = JsonUtils
                         .getMoviesFromJson(MainActivity.this, jsonWeatherResponse);
 
 
@@ -165,7 +167,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         }
 
         @Override
-        protected void onPostExecute(String[] weatherData) {
+        protected void onPostExecute(ArrayList<Movie> weatherData) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (weatherData != null) {
                 showMoviesDataView();
