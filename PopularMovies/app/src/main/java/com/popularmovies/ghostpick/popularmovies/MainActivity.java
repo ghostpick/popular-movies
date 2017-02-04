@@ -17,6 +17,8 @@ import com.popularmovies.ghostpick.popularmovies.data.Movie;
 import com.popularmovies.ghostpick.popularmovies.data.PopularMoviesPreferences;
 import com.popularmovies.ghostpick.popularmovies.utilities.NetworkUtils;
 import com.popularmovies.ghostpick.popularmovies.utilities.JsonUtils;
+
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -58,12 +60,12 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
 
     //Handle RecyclerView item click.
     @Override
-    public void onClick(String weatherForDay) {
+    public void onClick(Movie movie) {
         Context context = this;
-        Class destinationClass = MovieDetailActivity.class;
-        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
-        startActivity(intentToStartDetailActivity);
+
+        Intent intent = new Intent(getApplicationContext(), MovieDetailActivity.class);
+        intent.putExtra("item_movie", (Serializable) movie);
+        startActivityForResult(intent, 1);
     }
 
     // Toolbar create

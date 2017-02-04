@@ -21,7 +21,7 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
 
     // Interface that receives onClick messages
     interface MoviesAdapterOnClickHandler {
-        void onClick(String weatherForDay);
+        void onClick(Movie  movie);
     }
 
     // Handler is called when an item is clicked
@@ -44,11 +44,9 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-
             Movie movie = movieData.get(adapterPosition);
-            String movieOverview = movie.getOverview();
 
-            mClickHandler.onClick(movieOverview);
+            mClickHandler.onClick(movie);
         }
     }
 
