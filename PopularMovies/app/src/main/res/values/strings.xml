@@ -25,5 +25,6 @@
     <string name="QUERY_PAGE">page</string>
     <string name="PARAM_LANGUAGE">en-US</string>
     <string name="PARAM_PAGE">1</string>
-    <string name="API_KEY">XXXXXXXXXXXXXXXXXXXXXXXXXXXX</string>
+    <string name="API_KEY">YOUR_API_KEY</string>
+
 </resources>
