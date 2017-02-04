@@ -1,9 +1,29 @@
-<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
-
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <string name="app_name">Popular Movies</string>
     <string name="error_message">An error has occurred.</string>
     <string name="item_sortByNowPlaying">Sort By Now Playing</string>
     <string name="item_sortByPopular">Sort By Popular</string>
     <string name="item_sortByTopRated">Sort By Top Rated</string>
 
+    <!-- data/PopularMoviesPreferences -->
+    <string name="defaultFilter">now_playing</string>
+
+    <!-- utilities/JsonUtils -->
+    <string name="jsonMovie0">cod</string>
+    <string name="jsonMovie1">results</string>
+    <string name="jsonMovie2">title</string>
+    <string name="jsonMovie3">overview</string>
+    <string name="jsonMovie4">release_date</string>
+    <string name="jsonMovie5">vote_average</string>
+    <string name="jsonMovie6">poster_path</string>
+
+    <!-- utilities/NetworkUtils -->
+    <string name="THE_MOVIE_DB_BASE">https://api.themoviedb.org/3/movie/</string>
+    <string name="QUERY_API_KEY">api_key</string>
+    <string name="QUERY_LANGUAGE">language</string>
+    <string name="QUERY_PAGE">page</string>
+    <string name="PARAM_LANGUAGE">en-US</string>
+    <string name="PARAM_PAGE">1</string>
+    <string name="API_KEY">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</string>
 </resources>

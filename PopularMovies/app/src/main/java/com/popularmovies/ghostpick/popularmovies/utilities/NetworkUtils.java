@@ -1,7 +1,11 @@
 package com.popularmovies.ghostpick.popularmovies.utilities;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+
+import com.popularmovies.ghostpick.popularmovies.R;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -9,24 +13,24 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-
 public final class NetworkUtils {
 
-    private static final String TAG = NetworkUtils.class.getSimpleName();
+    public static URL buildUrl(Context context, String filterMovie) {
 
-    private static final String THE_MOVIE_DB_BASE   = "https://api.themoviedb.org/3/movie/";
+        final String THE_MOVIE_DB_BASE  = context.getString(R.string.THE_MOVIE_DB_BASE);
+        final String QUERY_API_KEY      = context.getString(R.string.QUERY_API_KEY);
+        final String QUERY_LANGUAGE     = context.getString(R.string.QUERY_LANGUAGE);
+        final String QUERY_PAGE         = context.getString(R.string.QUERY_PAGE);
+        final String PARAM_API_KEY      = context.getString(R.string.API_KEY);
+        String param_language           = context.getString(R.string.PARAM_LANGUAGE);
+        int param_page = 0;
 
-    private static final String QUERY_API_KEY       = "api_key";
-    private static final String QUERY_LANGUAGE      = "language";
-    private static final String QUERY_PAGE          = "page";
+        try {
+            param_page = Integer.parseInt(context.getString(R.string.PARAM_PAGE));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
-    private static final String PARAM_API_KEY       = "XXXX";
-
-    static final String param_language              = "en-US";
-    static final int param_page                     = 1;
-
-
-    public static URL buildUrl(String filterMovie) {
 
         Uri builtUri = Uri.parse(THE_MOVIE_DB_BASE + filterMovie).buildUpon()
                 .appendQueryParameter(QUERY_API_KEY, PARAM_API_KEY)
@@ -41,19 +45,12 @@ public final class NetworkUtils {
             e.printStackTrace();
         }
 
-        Log.v(TAG, "Built URI " + url);
+        Log.v("NetworkUtils", "Built URI " + url);
 
         return url;
     }
 
-
-    /**
-     * This method returns the entire result from the HTTP response.
-     *
-     * @param url The URL to fetch the HTTP response from.
-     * @return The contents of the HTTP response.
-     * @throws IOException Related to network and stream reading
-     */
+    //Returns the entire result from the HTTP response.
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {

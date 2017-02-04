@@ -1,6 +1,7 @@
 package com.popularmovies.ghostpick.popularmovies.utilities;
 
 import android.content.Context;
+import com.popularmovies.ghostpick.popularmovies.R;
 import com.popularmovies.ghostpick.popularmovies.data.Movie;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,14 +13,13 @@ public class JsonUtils {
 
     public static ArrayList<Movie> getMoviesFromJson(Context context, String movies) throws JSONException {
 
-        final String jsonResults        = "results";
-        final String jsonTitle          = "title";
-        final String jsonOverview       = "overview";
-        final String jsonReleaseDate    = "release_date";
-        final String jsonVoteAverage    = "vote_average";
-        final String jsonImage          = "poster_path";
-
-        final String jsonMessageCode    = "cod";
+        final String jsonMessageCode    = context.getString(R.string.jsonMovie0);
+        final String jsonResults        = context.getString(R.string.jsonMovie1);
+        final String jsonTitle          = context.getString(R.string.jsonMovie2);
+        final String jsonOverview       = context.getString(R.string.jsonMovie3);
+        final String jsonReleaseDate    = context.getString(R.string.jsonMovie4);
+        final String jsonVoteAverage    = context.getString(R.string.jsonMovie5);
+        final String jsonImage          = context.getString(R.string.jsonMovie6);
 
         JSONObject moviesJson = new JSONObject(movies);
 

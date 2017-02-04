@@ -1,12 +1,11 @@
 package com.popularmovies.ghostpick.popularmovies.data;
 
 import android.content.Context;
+import com.popularmovies.ghostpick.popularmovies.R;
 
 public class PopularMoviesPreferences {
 
-    private static final String DEFAULT_FILTER= "now_playing";
-
     public static String getPreferredWeatherLocation(Context context) {
-        return DEFAULT_FILTER;
+        return context.getString(R.string.defaultFilter);
     }
 }

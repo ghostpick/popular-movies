@@ -2,94 +2,61 @@ package com.popularmovies.ghostpick.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.popularmovies.ghostpick.popularmovies.data.Movie;
 import com.popularmovies.ghostpick.popularmovies.data.PopularMoviesPreferences;
 import com.popularmovies.ghostpick.popularmovies.utilities.NetworkUtils;
 import com.popularmovies.ghostpick.popularmovies.utilities.JsonUtils;
-
 import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity  extends AppCompatActivity implements MovieAdapter.MoviesAdapterOnClickHandler {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private RecyclerView    rv_movies;
+    private TextView        tv_ErrorMessage;
+    private MovieAdapter    movieAdapter;
+    private ProgressBar     progressBar;
 
-
-    private RecyclerView mMainRecyclerView;
-    private MovieAdapter mMovieAdapter;
-
-    private TextView mErrorMessage;
-    private ProgressBar mLoadingIndicator;
-
-
+    //Mappings movies data onCreate
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
 
-        // RecyclerView
-        mMainRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
         // Error message
-        mErrorMessage = (TextView) findViewById(R.id.tv_error_message_display);
+        tv_ErrorMessage = (TextView) findViewById(R.id.tv_error_message_display);
 
-        // LinearLayoutManager
-        LinearLayoutManager layoutManager
-                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager manager = new GridLayoutManager(this, 2);
 
-        mMainRecyclerView.setLayoutManager(layoutManager);
+        // RecyclerView with moviesGrid
+        rv_movies = (RecyclerView) findViewById(R.id.recyclerview_movies);
+        rv_movies.setLayoutManager(manager);
+        rv_movies.setHasFixedSize(true);
 
-         /* Improve performance if the changes in content do not
-         * change the child layout size in the RecyclerView
-         */
-        mMainRecyclerView.setHasFixedSize(true);
-
-        /*
-         * The ForecastAdapter is responsible for linking our weather data with the Views that
-         * will end up displaying our weather data.
-         */
-        mMovieAdapter = new MovieAdapter(this);
+        //Linking movies data with the views
+        movieAdapter = new MovieAdapter(this);
 
         //Setting the adapter attaches it to the RecyclerView
-        mMainRecyclerView.setAdapter(mMovieAdapter);
+        rv_movies.setAdapter(movieAdapter);
 
         // Setting loadingIndicator
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
         // Load movies data
         loadMoviesData();
     }
 
-    /**
-     * This method will get the user's preferred location for weather, and then tell some
-     * background method to get the weather data in the background.
-     */
-    private void loadMoviesData() {
-        showMoviesDataView();
-
-        String defaultFilver = PopularMoviesPreferences.getPreferredWeatherLocation(this);
-        new FetchWeatherTask().execute(defaultFilver);
-    }
-
-    /**
-     * This method is overridden by our MainActivity class in order to handle RecyclerView item
-     * clicks.
-     *
-     * @param weatherForDay The weather for the day that was clicked
-     */
+    //Handle RecyclerView item click.
     @Override
     public void onClick(String weatherForDay) {
         Context context = this;
@@ -99,66 +66,74 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         startActivity(intentToStartDetailActivity);
     }
 
-    /**
-     * This method will make the View for the weather data visible and
-     * hide the error message.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
+    // Toolbar create
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Get a handle on the menu inflater
+        MenuInflater inflater = getMenuInflater();
+        // Inflate menu layout to this menu
+        inflater.inflate(R.menu.movie, menu);
+        /* Return true so that the menu is displayed in the Toolbar */
+        return true;
+    }
+
+    // Toolbar click
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.item_sortByNowPlaying) {
+            movieAdapter.setMovieData(null);
+            loadMoviesData();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Get the movies data in the background
+    private void loadMoviesData() {
+        showMoviesDataView();
+
+        String defaultFilver = PopularMoviesPreferences.getPreferredWeatherLocation(this);
+        new FetchMovieTask().execute(defaultFilver);
+    }
+
+    //Show the currently visible data, then hide the error view
     private void showMoviesDataView() {
-        /* First, make sure the error is invisible */
-        mErrorMessage.setVisibility(View.INVISIBLE);
-        /* Then, make sure the weather data is visible */
-        mMainRecyclerView.setVisibility(View.VISIBLE);
+        tv_ErrorMessage.setVisibility(View.INVISIBLE);
+        rv_movies.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * This method will make the error message visible and hide the weather
-     * View.
-     * <p>
-     * Since it is okay to redundantly set the visibility of a View, we don't
-     * need to check whether each view is currently visible or invisible.
-     */
+    //Hide the currently visible data, then show the error view
     private void showErrorMessage() {
-        /* First, hide the currently visible data */
-        mMainRecyclerView.setVisibility(View.INVISIBLE);
-        /* Then, show the error */
-        mErrorMessage.setVisibility(View.VISIBLE);
+        rv_movies.setVisibility(View.INVISIBLE);
+        tv_ErrorMessage.setVisibility(View.VISIBLE);
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, ArrayList<Movie>> {
+
+    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected ArrayList<Movie> doInBackground(String... params) {
 
-            /* If there's no zip code, there's nothing to look up. */
-            if (params.length == 0) {
+            // If there's nothing to look up
+            if (params.length == 0)
                 return null;
-            }
 
-            String defaultFilver = params[0];
-            defaultFilver = "now_playing";
-            URL moviesRequestUrl = NetworkUtils.buildUrl(defaultFilver);
+            String        defaultFilver    = params[0];
+            URL           moviesRequestUrl = NetworkUtils.buildUrl(MainActivity.this, defaultFilver);
 
             try {
-                String jsonWeatherResponse = NetworkUtils
-                        .getResponseFromHttpUrl(moviesRequestUrl);
-
-                ArrayList<Movie> simpleJsonWeatherData = JsonUtils
-                        .getMoviesFromJson(MainActivity.this, jsonWeatherResponse);
-
-
-                System.out.println(simpleJsonWeatherData);
-
-
-                return simpleJsonWeatherData;
+                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(moviesRequestUrl);
+                return JsonUtils.getMoviesFromJson(MainActivity.this, jsonMovieResponse);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -167,60 +142,14 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Movie> weatherData) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (weatherData != null) {
+        protected void onPostExecute(ArrayList<Movie> movies) {
+            progressBar.setVisibility(View.INVISIBLE);
+            if (movies != null) {
                 showMoviesDataView();
-                mMovieAdapter.setWeatherData(weatherData);
+                movieAdapter.setMovieData(movies);
             } else {
                 showErrorMessage();
             }
         }
-    }
-
-    private void openLocationInMap() {
-        String addressString = "Avenida dos Aliados, 104, Porto, Portugal";
-        Uri geoLocation = Uri.parse("geo:0,0?q=" + addressString);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + geoLocation.toString()
-                    + ", no receiving apps installed!");
-        }
-    }
-
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        /* Use AppCompatActivity's method getMenuInflater to get a handle on the menu inflater */
-        MenuInflater inflater = getMenuInflater();
-        /* Use the inflater's inflate method to inflate our menu layout to this menu */
-        inflater.inflate(R.menu.movie, menu);
-        /* Return true so that the menu is displayed in the Toolbar */
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_refresh) {
-            mMovieAdapter.setWeatherData(null);
-            loadMoviesData();
-            return true;
-        }
-
-        // COMPLETED (2) Launch the map when the map menu item is clicked
-        if (id == R.id.item_openMap) {
-            openLocationInMap();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
