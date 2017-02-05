@@ -10,4 +10,6 @@
     <string name="PARAM_LANGUAGE">en-US</string>
     <string name="API_KEY">YOUR_API_KEY</string>
 
+    <!-- MovieDetailActivity-->
+    <string name="movieDetail_title">Movie Detail</string>
 </resources>

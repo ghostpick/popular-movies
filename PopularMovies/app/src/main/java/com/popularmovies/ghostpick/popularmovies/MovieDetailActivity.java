@@ -16,6 +16,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
+        this.setTitle(this.getString(R.string.movieDetail_title));
+
         Movie movie = (Movie) getIntent().getSerializableExtra("item_movie");
 
         TextView tv_movieDetails = (TextView) findViewById(R.id.tv_movieTitle);
