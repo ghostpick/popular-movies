@@ -1,9 +1,13 @@
 package com.popularmovies.ghostpick.popularmovies;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
+import android.widget.ImageView;
 import android.widget.TextView;
+import com.popularmovies.ghostpick.popularmovies.data.Movie;
+import com.popularmovies.ghostpick.popularmovies.data.Vars;
+import com.squareup.picasso.Picasso;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
@@ -12,19 +16,27 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        String s_movie;
-        TextView tv_movieDetails;
+        this.setTitle(this.getString(R.string.movieDetail_title));
 
-        tv_movieDetails = (TextView) findViewById(R.id.tv_display_movie);
+        Movie movie = (Movie) getIntent().getSerializableExtra("item_movie");
 
-        Intent intentThatStartedThisActivity = getIntent();
+        TextView tv_movieDetails = (TextView) findViewById(R.id.tv_movieTitle);
+        tv_movieDetails.setText(movie.getTitle());
 
-        if (intentThatStartedThisActivity != null) {
-            if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
-                s_movie = intentThatStartedThisActivity.getStringExtra(Intent.EXTRA_TEXT);
-                tv_movieDetails.setText(s_movie);
-            }
-        }
+        TextView tv_movieReleaseDate = (TextView) findViewById(R.id.tv_movieReleaseDate);
+        tv_movieReleaseDate.setText(Html.fromHtml(Vars.releaseDate + movie.getReleaseDate()));
+
+        ImageView tv_moviePhoto = (ImageView) findViewById(R.id.tv_moviePhoto);
+        Picasso.with(this).load(Vars.IMAGE_LINK_500 + movie.getPhoto()).into(tv_moviePhoto);
+
+        TextView tv_movieVoteAverage = (TextView) findViewById(R.id.tv_movieVoteAverage);
+        tv_movieVoteAverage.setText(Html.fromHtml(Vars.VoteAverage + movie.getVoteAverage() + Vars.VoteAverageMax));
+
+        TextView tv_smovieOverview = (TextView) findViewById(R.id.tv_smovieOverview);
+        tv_smovieOverview.setText(Vars.synopsis);
+
+        TextView tv_movieOverview = (TextView) findViewById(R.id.tv_movieOverview);
+        tv_movieOverview.setText(Html.fromHtml(movie.getOverview()));
     }
 }
 

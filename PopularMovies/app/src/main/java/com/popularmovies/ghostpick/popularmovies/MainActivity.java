@@ -1,6 +1,5 @@
 package com.popularmovies.ghostpick.popularmovies;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -14,9 +13,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.popularmovies.ghostpick.popularmovies.data.Movie;
-import com.popularmovies.ghostpick.popularmovies.data.PopularMoviesPreferences;
+import com.popularmovies.ghostpick.popularmovies.data.Vars;
 import com.popularmovies.ghostpick.popularmovies.utilities.NetworkUtils;
 import com.popularmovies.ghostpick.popularmovies.utilities.JsonUtils;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -58,12 +58,11 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
 
     //Handle RecyclerView item click.
     @Override
-    public void onClick(String weatherForDay) {
-        Context context = this;
-        Class destinationClass = MovieDetailActivity.class;
-        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
-        startActivity(intentToStartDetailActivity);
+    public void onClick(Movie movie) {
+
+        Intent intent = new Intent(getApplicationContext(), MovieDetailActivity.class);
+        intent.putExtra("item_movie", (Serializable) movie);
+        startActivityForResult(intent, 1);
     }
 
     // Toolbar create
@@ -87,17 +86,34 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
             loadMoviesData();
             return true;
         }
+        else if (id == R.id.item_sortByPopular) {
+            movieAdapter.setMovieData(null);
+            loadMoviesData(Vars.movieFilter_Popular);
+            return true;
+        }
+        else if (id == R.id.item_sortByTopRated) {
+            movieAdapter.setMovieData(null);
+            loadMoviesData(Vars.movieFilter_TopRated);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     //Get the movies data in the background
-    private void loadMoviesData() {
+    private void loadMoviesData(String... params) {
+        String movieFilter = "";
+
         showMoviesDataView();
 
-        String defaultFilver = PopularMoviesPreferences.getPreferredWeatherLocation(this);
-        new FetchMovieTask().execute(defaultFilver);
+        if (params.length == 0)
+            movieFilter = Vars.movieFilter_nowPlaying;
+        else
+            movieFilter = params[0];
+
+        new FetchMovieTask().execute(movieFilter);
     }
 
     //Show the currently visible data, then hide the error view
@@ -133,7 +149,7 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
 
             try {
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(moviesRequestUrl);
-                return JsonUtils.getMoviesFromJson(MainActivity.this, jsonMovieResponse);
+                return JsonUtils.getMoviesFromJson(jsonMovieResponse);
 
             } catch (Exception e) {
                 e.printStackTrace();
