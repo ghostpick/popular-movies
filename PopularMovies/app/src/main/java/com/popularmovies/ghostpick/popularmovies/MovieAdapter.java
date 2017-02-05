@@ -8,20 +8,21 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.popularmovies.ghostpick.popularmovies.data.Movie;
+import com.popularmovies.ghostpick.popularmovies.data.Vars;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private ArrayList<Movie> movieData;
+    private ArrayList<Movie> arr_movie;
 
     // Handler that makes it easy for an Activity to interface with the RecyclerView
     private final MoviesAdapterOnClickHandler mClickHandler;
 
     // Interface that receives onClick messages
     interface MoviesAdapterOnClickHandler {
-        void onClick(Movie  movie);
+        void onClick(Movie itemMovie);
     }
 
     // Handler is called when an item is clicked
@@ -44,9 +45,9 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            Movie movie = movieData.get(adapterPosition);
+            Movie itemMovie = arr_movie.get(adapterPosition);
 
-            mClickHandler.onClick(movie);
+            mClickHandler.onClick(itemMovie);
         }
     }
 
@@ -67,12 +68,11 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
      * the contents of the ViewHolder to display the movie details for this particular position.*/
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
-        Movie movie = movieData.get(position);
-
+        Movie movie       = arr_movie.get(position);
         String posterPath = movie.getPhoto();
 
         Picasso.with(movieAdapterViewHolder.img_movie.getContext())
-                .load("http://image.tmdb.org/t/p/w342/" + posterPath)
+                .load(Vars.IMAGE_LINK_342 + posterPath)
                 .into(movieAdapterViewHolder.img_movie);
     }
 
@@ -80,14 +80,14 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
      * to help layout our Views and for animations.*/
     @Override
     public int getItemCount() {
-        if (null == movieData) return 0;
-        return movieData.size();
+        if (null == arr_movie) return 0;
+        return arr_movie.size();
     }
 
     /* Used to set the movies on a MovieAdapter if we've already created one. This is handy when
      * we get new data from the web but don't want to create a new MovieAdapter to display it.*/
     void setMovieData(ArrayList<Movie> movieData) {
-        this.movieData = movieData;
+        this.arr_movie = movieData;
         notifyDataSetChanged();
     }
 }

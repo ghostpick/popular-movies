@@ -1,8 +1,7 @@
 package com.popularmovies.ghostpick.popularmovies.utilities;
 
-import android.content.Context;
-import com.popularmovies.ghostpick.popularmovies.R;
 import com.popularmovies.ghostpick.popularmovies.data.Movie;
+import com.popularmovies.ghostpick.popularmovies.data.Vars;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,15 +10,15 @@ import java.util.ArrayList;
 
 public class JsonUtils {
 
-    public static ArrayList<Movie> getMoviesFromJson(Context context, String movies) throws JSONException {
+    public static ArrayList<Movie> getMoviesFromJson(String movies) throws JSONException {
 
-        final String jsonMessageCode    = context.getString(R.string.jsonMovie0);
-        final String jsonResults        = context.getString(R.string.jsonMovie1);
-        final String jsonTitle          = context.getString(R.string.jsonMovie2);
-        final String jsonOverview       = context.getString(R.string.jsonMovie3);
-        final String jsonReleaseDate    = context.getString(R.string.jsonMovie4);
-        final String jsonVoteAverage    = context.getString(R.string.jsonMovie5);
-        final String jsonImage          = context.getString(R.string.jsonMovie6);
+        final String jsonMessageCode    = Vars.jsonMovie0;
+        final String jsonResults        = Vars.jsonMovie1;
+        final String jsonTitle          = Vars.jsonMovie2;
+        final String jsonOverview       = Vars.jsonMovie3;
+        final String jsonReleaseDate    = Vars.jsonMovie4;
+        final String jsonVoteAverage    = Vars.jsonMovie5;
+        final String jsonImage          = Vars.jsonMovie6;
 
         JSONObject moviesJson = new JSONObject(movies);
 
@@ -43,7 +42,6 @@ public class JsonUtils {
         for (int i = 0; i < moviesArray.length(); i++) {
             Movie movie = new Movie();
 
-            /* Get the JSON object representing the day */
             JSONObject itemMovie = moviesArray.getJSONObject(i);
 
             movie.setTitle(itemMovie.getString(jsonTitle));
