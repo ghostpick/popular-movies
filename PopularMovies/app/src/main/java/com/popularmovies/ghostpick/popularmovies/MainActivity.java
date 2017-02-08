@@ -16,7 +16,7 @@ import com.popularmovies.ghostpick.popularmovies.data.Movie;
 import com.popularmovies.ghostpick.popularmovies.data.Vars;
 import com.popularmovies.ghostpick.popularmovies.utilities.NetworkUtils;
 import com.popularmovies.ghostpick.popularmovies.utilities.JsonUtils;
-import java.io.Serializable;
+
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -27,10 +27,18 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
     private MovieAdapter    movieAdapter;
     private ProgressBar     progressBar;
 
+    private static String   viewState = "default";
+    static final String STATE = "default";
+    private String mState;
+
+
     //Mappings movies data onCreate
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String onCreateState = "";
+
+        // Probably initialize members with default values for a new instance
         setContentView(R.layout.activity_movie);
 
         // Error message
@@ -52,8 +60,27 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
         // Setting loadingIndicator
         progressBar = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        // Load movies data
-        loadMoviesData();
+        // Restore value of members from saved state
+        if (savedInstanceState != null) {
+            mState = savedInstanceState.getString(STATE);
+            onCreateState = mState;
+        }
+        else if(!viewState.equals("") ) {
+            mState = viewState;
+            onCreateState = viewState;
+        }
+
+        switch (onCreateState ) {
+            case "default":
+                loadMoviesData();
+                break;
+            case "sortByPopular":
+                loadMoviesData(Vars.movieFilter_Popular);
+                break;
+            case "sortByTopRated":
+                loadMoviesData(Vars.movieFilter_TopRated);
+                break;
+        }
     }
 
     //Handle RecyclerView item click.
@@ -61,8 +88,9 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
     public void onClick(Movie movie) {
 
         Intent intent = new Intent(getApplicationContext(), MovieDetailActivity.class);
-        intent.putExtra("item_movie", (Serializable) movie);
-        startActivityForResult(intent, 1);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Movie.PARCELABLE_KEY, movie);
+        getApplicationContext().startActivity(intent);
     }
 
     // Toolbar create
@@ -79,25 +107,50 @@ public class MainActivity  extends AppCompatActivity implements MovieAdapter.Mov
     // Toolbar click
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        if (id == R.id.item_sortByNowPlaying) {
-            movieAdapter.setMovieData(null);
-            loadMoviesData();
-            return true;
-        }
-        else if (id == R.id.item_sortByPopular) {
-            movieAdapter.setMovieData(null);
-            loadMoviesData(Vars.movieFilter_Popular);
-            return true;
-        }
-        else if (id == R.id.item_sortByTopRated) {
-            movieAdapter.setMovieData(null);
-            loadMoviesData(Vars.movieFilter_TopRated);
-            return true;
-        }
+        // check internet connection then run an selected option
+        if (NetworkUtils.isNetworkConnected(this)) {
 
-        return super.onOptionsItemSelected(item);
+            int id = item.getItemId();
+
+            if (id == R.id.item_sortByNowPlaying) {
+                movieAdapter.setMovieData(null);
+                loadMoviesData();
+                mState = "default";
+                viewState = mState;
+                return true;
+            } else if (id == R.id.item_sortByPopular) {
+                movieAdapter.setMovieData(null);
+                loadMoviesData(Vars.movieFilter_Popular);
+                mState= "sortByPopular";
+                viewState = mState;
+                return true;
+            } else if (id == R.id.item_sortByTopRated) {
+                movieAdapter.setMovieData(null);
+                loadMoviesData(Vars.movieFilter_TopRated);
+                mState = "sortByTopRated";
+                viewState = mState;
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+        else{
+            showErrorMessage();
+            return false;
+        }
+    }
+
+    // Save current state
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+          super.onSaveInstanceState(savedInstanceState);
+          savedInstanceState.putString(STATE, mState);
+
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mState = savedInstanceState.getString(STATE);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
